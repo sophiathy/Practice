@@ -22,8 +22,7 @@ type Products = {
 
 function App() {
 	const [items, setItems] = useState<Products[]>([]);
-	const [preview, setPreview] = useState(false); //  To-do: not global
-	const [isSelected, setSelected] = useState(false); //  To-do: not global
+	const [selectedList, setSelected] = useState<string[]>([]);
 
 	const fetchData = async () => {
 		try {
@@ -54,8 +53,19 @@ function App() {
 		fetchData();
 	}, []);
 
-	const togglePreview = () => setPreview((previewAction) => !previewAction);
-	const toggleSelected = () => setSelected((selectAction) => !selectAction);
+	function toggleSelected(skuCode : string){
+		setSelected((currentList) => {
+			if(currentList.includes(skuCode)){
+				const current = [...currentList]
+				current.splice(current.indexOf(skuCode), 1)
+				console.log("Cancelled " + skuCode)
+				return current
+			}else{
+				console.log("Selected " + skuCode)
+				return [...currentList, skuCode]
+			}
+		})
+	}
 
 	return (
 		<>
@@ -70,7 +80,7 @@ function App() {
 						{items.length ? (
 							<div className="grid grid-cols-3 my-2 space-x-8 space-y-4">
 								{items.map((item) => {
-									return isSelected ? (
+									return selectedList.includes(item.code) ? (
 										<div
 											className="flex flex-col items-center bg-gray-300 rounded-xl p-4 space-y-8"
 											key={item.code}
@@ -82,10 +92,8 @@ function App() {
 												skuPrice={
 													item.price ? item.price.formattedValue : "$ N/A"
 												}
-												preview={preview}
-												togglePreview={togglePreview}
-												isSelected={isSelected}
-												toggleSelected={toggleSelected}
+												isSelected={true}
+												toggleSelected={() => toggleSelected(item.code)}
 											/>
 										</div>
 									) : (
@@ -100,10 +108,8 @@ function App() {
 												skuPrice={
 													item.price ? item.price.formattedValue : "$ N/A"
 												}
-												preview={preview}
-												togglePreview={togglePreview}
-												isSelected={isSelected}
-												toggleSelected={toggleSelected}
+												isSelected={false}
+												toggleSelected={() => toggleSelected(item.code)}
 											/>
 										</div>
 									);
