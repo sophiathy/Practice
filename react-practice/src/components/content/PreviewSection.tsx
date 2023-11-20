@@ -5,7 +5,7 @@ type PreviewSectionProps = {
 	isSelected: boolean;
 };
 
-export function PreviewSection({
+function PreviewSection({
 	code,
 	price,
 	toggleSelected,
@@ -24,3 +24,5 @@ export function PreviewSection({
 		</div>
 	);
 }
+
+export default PreviewSection;

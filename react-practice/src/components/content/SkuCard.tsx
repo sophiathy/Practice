@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
-import { PreviewSection } from "./PreviewSection";
-import { WhiteButton } from "./WhiteButton";
+import WhiteButton from "./WhiteButton";
+import PreviewSection from "./PreviewSection";
 
-type SkuContentsProps = {
+type SkuCardProps = {
 	imageUrl: string;
 	skuName: string;
 	skuCode: string;
 	skuPrice: string;
+	description: string;
+	stockStatus: string;
 	isSelected: boolean;
 	toggleSelected: () => void;
 };
 
-export function SkuContents({
+function SkuCard({
 	imageUrl,
 	skuName,
 	skuCode,
 	skuPrice,
+	description,
+	stockStatus,
 	isSelected,
 	toggleSelected,
-}: SkuContentsProps) {
+}: SkuCardProps) {
 	const [isPreviewing, setIsPreviewing] = useState(false);
 	const togglePreview = () => {
 		setIsPreviewing((current) => !current);
@@ -76,14 +80,31 @@ export function SkuContents({
 
 	return (
 		<>
-			<img className="shrink-0 h-50 w-50" src={imageUrl} />
+			{imageUrl.length ? (
+				<img className="shrink-0 h-50 w-50" src={imageUrl} />
+			) : (
+				<div className="container mx-auto border-4 rounded-xl bg-white p-24">
+					No Image
+				</div>
+			)}
 			<p className="font-semibold">{skuName}</p>
 			<div className="flex-row space-x-12">
-				<WhiteButton buttonName="Preview" userAction={() => togglePreview()} />
+				<WhiteButton
+					path=""
+					buttonName="Preview"
+					userAction={() => togglePreview()}
+				/>
 
 				<WhiteButton
+					path="/details"
 					buttonName="Details"
-					userAction={() => console.log("Clicked Details")}
+					props={{
+						imageUrl: imageUrl,
+						skuName: skuName,
+						skuPrice: skuPrice,
+						description: description,
+						stockStatus: stockStatus,
+					}}
 				/>
 			</div>
 
@@ -107,3 +128,5 @@ export function SkuContents({
 		</>
 	);
 }
+
+export default SkuCard;
