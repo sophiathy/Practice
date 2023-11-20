@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PreviewSection } from "./PreviewSection";
 import { WhiteButton } from "./WhiteButton";
 
@@ -19,8 +19,34 @@ export function SkuContents({
 	isSelected,
 	toggleSelected,
 }: SkuContentsProps) {
-	const [isPreviewing, setIsPreviewing] = useState(false)
-	const togglePreview = () => setIsPreviewing((current) => !current)
+	const [isPreviewing, setIsPreviewing] = useState(false);
+	const togglePreview = () => {
+		setIsPreviewing((current) => !current);
+
+		const openedPreview: string[] = JSON.parse(
+			localStorage.getItem("openedPreview") ?? ""
+		);
+
+		if (isPreviewing) {
+			const newOpenedPreview = openedPreview.filter(
+				(code) => !(code === skuCode)
+			);
+			localStorage.setItem("openedPreview", JSON.stringify(newOpenedPreview));
+		} else {
+			const newOpenedPreview = [...openedPreview, skuCode];
+			localStorage.setItem("openedPreview", JSON.stringify(newOpenedPreview));
+		}
+	};
+
+	useEffect(() => {
+		const openedPreview: string[] = JSON.parse(
+			localStorage.getItem("openedPreview") ?? ""
+		);
+
+		if (openedPreview.includes(skuCode)) {
+			setIsPreviewing(true);
+		}
+	}, [skuCode]);
 
 	// const [isPreviewing, setIsPreviewing] = useState<string[]>(() => {
 	// 	const previewList = localStorage.getItem("PREVIEW")
