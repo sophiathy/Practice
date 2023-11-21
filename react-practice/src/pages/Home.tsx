@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 import RightBar from "../components/RightBar";
 import SkuCard from "../components/content/SkuCard";
 import PageButtonSection from "../components/content/PageButtonSection";
+import clsx from "clsx";
 
 type Image = {
 	url: string;
@@ -31,34 +32,19 @@ type Products = {
 	stock: Stock;
 };
 
+const SKU_PER_PAGE: number = 3 as const;
+
 function Home() {
 	const [items, setItems] = useState<Products[]>([]);
 	const [selectedList, setSelected] = useState<string[]>([]);
 
-	const skuPerPage: number = 3;
-	const totalPages = useRef(1);
+	const [totalPages, setTotalPages] = useState(1);
 	const [currentPage, setCurrentPage] = useState(1);
 	const currentSkuTable = useMemo(() => {
-		const firstSkuIndex = (currentPage - 1) * skuPerPage;
-		const lastSkuIndex = firstSkuIndex + skuPerPage;
+		const firstSkuIndex = (currentPage - 1) * SKU_PER_PAGE;
+		const lastSkuIndex = firstSkuIndex + SKU_PER_PAGE;
 		return items.length ? items.slice(firstSkuIndex, lastSkuIndex) : [];
 	}, [items, currentPage]);
-
-	const fetchData = async () => {
-		try {
-			const response = await fetch("/data.json");
-
-			if (response.status === 200) {
-				const jsonData = await response.json();
-				// console.log(jsonData.products); //called twice by useEffect
-				setItems(jsonData.products as Products[]);
-			} else {
-				console.log("Fail to get data: " + response.status);
-			}
-		} catch (e) {
-			console.log("ERROR: " + e);
-		}
-	};
 
 	useEffect(() => {
 		// fetch("/data.json")
@@ -70,9 +56,27 @@ function Home() {
 		//     console.log("Empty Data / Fail to Get Response: " + e)
 		//   );
 
+		const fetchData = async () => {
+			try {
+				const response = await fetch("/data.json");
+
+				if (response.status === 200) {
+					const jsonData = await response.json();
+					console.log(jsonData.products);
+					setItems(jsonData.products as Products[]);
+					setTotalPages(() =>
+						Math.ceil(jsonData.products.length / SKU_PER_PAGE)
+					);
+				} else {
+					console.log("Fail to get data: " + response.status);
+				}
+			} catch (e) {
+				console.log("ERROR: " + e);
+			}
+		};
 		fetchData();
-		totalPages.current = Math.ceil(items.length / skuPerPage);
-	}, [items.length]);
+		// totalPages = Math.ceil(items.length / skuPerPage);
+	}, []);
 
 	function toggleSelected(skuCode: string) {
 		setSelected((currentList) => {
@@ -94,7 +98,7 @@ function Home() {
 
 	function nextPage() {
 		setCurrentPage((current) =>
-			current < totalPages.current ? current + 1 : totalPages.current
+			current < totalPages ? current + 1 : totalPages
 		);
 	}
 
@@ -116,9 +120,13 @@ function Home() {
 							<>
 								<div className="grid grid-cols-3 my-2 space-x-8 space-y-4">
 									{currentSkuTable.map((item) => {
-										return selectedList.includes(item.code) ? (
+										const isSelected = selectedList.includes(item.code);
+										return (
 											<div
-												className="flex flex-col items-center bg-gray-300 rounded-xl p-4 space-y-8"
+												className={clsx(
+													"flex flex-col items-center rounded-xl p-4 space-y-8",
+													isSelected ? "bg-gray-300" : "bg-white"
+												)}
 												key={item.code}
 											>
 												<SkuCard
@@ -130,25 +138,7 @@ function Home() {
 													}
 													description={item.description}
 													stockStatus={item.stock.stockLevelStatus.code}
-													isSelected={true}
-													toggleSelected={() => toggleSelected(item.code)}
-												/>
-											</div>
-										) : (
-											<div
-												className="flex flex-col items-center bg-white rounded-xl p-4 space-y-8"
-												key={item.code}
-											>
-												<SkuCard
-													imageUrl={item.images ? item.images[0].url : ""}
-													skuName={item.name ? item.name : "N/A"}
-													skuCode={item.code}
-													skuPrice={
-														item.price ? item.price.formattedValue : "$ N/A"
-													}
-													description={item.description}
-													stockStatus={item.stock.stockLevelStatus.code}
-													isSelected={false}
+													isSelected={isSelected}
 													toggleSelected={() => toggleSelected(item.code)}
 												/>
 											</div>
@@ -158,7 +148,7 @@ function Home() {
 
 								{/* Pagination */}
 								<PageButtonSection
-									totalPages={totalPages.current}
+									totalPages={totalPages}
 									currentPage={currentPage}
 									previousPage={previousPage}
 									nextPage={nextPage}

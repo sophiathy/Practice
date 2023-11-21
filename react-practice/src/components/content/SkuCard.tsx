@@ -42,6 +42,7 @@ function SkuCard({
 		}
 	};
 
+	// Check if item is previewing in localStorage
 	useEffect(() => {
 		const openedPreview: string[] = JSON.parse(
 			localStorage.getItem("openedPreview") ?? ""

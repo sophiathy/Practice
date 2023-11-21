@@ -18,6 +18,7 @@ function PageButtonSection({
 	return (
 		<div className="py-4 space-x-4">
 			<WhiteButton path="" buttonName="<" userAction={previousPage} />
+
 			{Array.from({ length: totalPages }).map((_page, index) => {
 				const pageNo: number = index + 1;
 				return pageNo === currentPage ? (
@@ -37,6 +38,7 @@ function PageButtonSection({
 					</button>
 				);
 			})}
+
 			<WhiteButton path="" buttonName=">" userAction={nextPage} />
 		</div>
 	);

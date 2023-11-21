@@ -12,15 +12,17 @@ function PreviewSection({
 	isSelected,
 }: PreviewSectionProps) {
 	return (
-		<div className="py-4 space-y-8">
+		<div className="flex flex-col py-4 space-y-8">
 			<p className="font-bold">{code}</p>
 			<p className="font-bold">{price}</p>
-			<button
-				className="bg-red-200 text-cyan-300 text-base font-semibold px-3 py-2 border border-cyan-300 rounded-2xl"
-				onClick={toggleSelected}
-			>
-				{isSelected ? "Cancel" : "Select"}
-			</button>
+			<div className="container">
+				<button
+					className="bg-red-200 text-cyan-300 text-base font-semibold px-3 py-2 border border-cyan-300 rounded-2xl"
+					onClick={toggleSelected}
+				>
+					{isSelected ? "Cancel" : "Select"}
+				</button>
+			</div>
 		</div>
 	);
 }
