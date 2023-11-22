@@ -28,7 +28,7 @@ function SkuCard({
 		setIsPreviewing((current) => !current);
 
 		const openedPreview: string[] = JSON.parse(
-			localStorage.getItem("openedPreview") ?? ""
+			localStorage.getItem("openedPreview") ?? "[]"
 		);
 
 		if (isPreviewing) {
@@ -45,7 +45,7 @@ function SkuCard({
 	// Check if item is previewing in localStorage
 	useEffect(() => {
 		const openedPreview: string[] = JSON.parse(
-			localStorage.getItem("openedPreview") ?? ""
+			localStorage.getItem("openedPreview") ?? "[]"
 		);
 
 		if (openedPreview.includes(skuCode)) {

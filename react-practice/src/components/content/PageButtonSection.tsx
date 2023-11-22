@@ -22,12 +22,9 @@ function PageButtonSection({
 			{Array.from({ length: totalPages }).map((_page, index) => {
 				const pageNo: number = index + 1;
 				return pageNo === currentPage ? (
-					<button
-						className="px-4 text-cyan-400 font-bold text-3xl"
-						key={pageNo}
-					>
+					<span className="px-4 text-cyan-400 font-bold text-3xl" key={pageNo}>
 						{pageNo}
-					</button>
+					</span>
 				) : (
 					<button
 						className="px-4 text-cyan-300 font-bold text-xl"

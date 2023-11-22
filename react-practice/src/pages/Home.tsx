@@ -36,16 +36,21 @@ const SKU_PER_PAGE: number = 3 as const;
 
 function Home() {
 	const [items, setItems] = useState<Products[]>([]);
-	const [selectedList, setSelected] = useState<string[]>([]);
+	const [selectedList, setSelected] = useState<string[]>(
+		JSON.parse(localStorage.getItem("selected") ?? "[]")
+	);
 
 	const [totalPages, setTotalPages] = useState(1);
-	const [currentPage, setCurrentPage] = useState(1);
+	const [currentPage, setCurrentPage] = useState(
+		parseInt(localStorage.getItem("pageNumber") ?? "1")
+	);
 	const currentSkuTable = useMemo(() => {
-		const firstSkuIndex = (currentPage - 1) * SKU_PER_PAGE;
-		const lastSkuIndex = firstSkuIndex + SKU_PER_PAGE;
+		const firstSkuIndex: number = (currentPage - 1) * SKU_PER_PAGE;
+		const lastSkuIndex: number = firstSkuIndex + SKU_PER_PAGE;
 		return items.length ? items.slice(firstSkuIndex, lastSkuIndex) : [];
 	}, [items, currentPage]);
 
+	// Fetch data
 	useEffect(() => {
 		// fetch("/data.json")
 		// 	.then((response) => response.json()) // can be refactor to async await -Kevin
@@ -83,27 +88,41 @@ function Home() {
 			if (currentList.includes(skuCode)) {
 				const current = [...currentList];
 				current.splice(current.indexOf(skuCode), 1);
-				console.log("Cancelled " + skuCode);
+
+				localStorage.setItem("selected", JSON.stringify(current));
+
 				return current;
 			} else {
-				console.log("Selected " + skuCode);
-				return [...currentList, skuCode];
+				const newList: string[] = [...currentList, skuCode];
+
+				localStorage.setItem("selected", JSON.stringify(newList));
+
+				return newList;
 			}
 		});
 	}
 
 	function previousPage() {
-		setCurrentPage((current) => (current > 1 ? current - 1 : 1));
+		setCurrentPage((current) => {
+			const newPage: number = current > 1 ? current - 1 : 1;
+			localStorage.setItem("pageNumber", JSON.stringify(newPage));
+			return newPage;
+		});
 	}
 
 	function nextPage() {
-		setCurrentPage((current) =>
-			current < totalPages ? current + 1 : totalPages
-		);
+		setCurrentPage((current) => {
+			const newPage: number = current < totalPages ? current + 1 : totalPages;
+			localStorage.setItem("pageNumber", JSON.stringify(newPage));
+			return newPage;
+		});
 	}
 
 	function jumpPage(page: number) {
-		setCurrentPage(() => page);
+		setCurrentPage(() => {
+			localStorage.setItem("pageNumber", JSON.stringify(page));
+			return page;
+		});
 	}
 
 	return (
