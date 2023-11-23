@@ -6,6 +6,7 @@ import RightBar from "../components/RightBar";
 import SkuCard from "../components/content/SkuCard";
 import PageButtonSection from "../components/content/PageButtonSection";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
 type Image = {
 	url: string;
@@ -15,26 +16,18 @@ type Price = {
 	formattedValue: string;
 };
 
-type Stock = {
-	stockLevelStatus: StockLevelStatus;
-};
-
-type StockLevelStatus = {
-	code: string;
-};
-
 type Products = {
 	code: string;
 	name?: string;
 	images?: Image[];
 	price?: Price;
-	description: string;
-	stock: Stock;
 };
 
 const SKU_PER_PAGE: number = 3 as const;
 
 function Home() {
+	const navigate = useNavigate();
+
 	const [items, setItems] = useState<Products[]>([]);
 	const [selectedList, setSelected] = useState<string[]>(
 		JSON.parse(localStorage.getItem("selected") ?? "[]")
@@ -82,6 +75,11 @@ function Home() {
 		fetchData();
 		// totalPages = Math.ceil(items.length / skuPerPage);
 	}, []);
+
+	// Update Home path based on Page Number
+	useEffect(() => {
+		navigate(`/?page=${currentPage}`);
+	}, [currentPage, navigate]);
 
 	function toggleSelected(skuCode: string) {
 		setSelected((currentList) => {
@@ -155,8 +153,6 @@ function Home() {
 													skuPrice={
 														item.price ? item.price.formattedValue : "$ N/A"
 													}
-													description={item.description}
-													stockStatus={item.stock.stockLevelStatus.code}
 													isSelected={isSelected}
 													toggleSelected={() => toggleSelected(item.code)}
 												/>

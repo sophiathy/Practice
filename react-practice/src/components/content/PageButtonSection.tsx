@@ -17,14 +17,18 @@ function PageButtonSection({
 }: PageButtonSectionProps) {
 	return (
 		<div className="py-4 space-x-4">
-			<WhiteButton path="" buttonName="<" userAction={previousPage} />
+			<WhiteButton buttonName="<" userAction={previousPage} />
 
 			{Array.from({ length: totalPages }).map((_page, index) => {
 				const pageNo: number = index + 1;
 				return pageNo === currentPage ? (
-					<span className="px-4 text-cyan-400 font-bold text-3xl" key={pageNo}>
+					<button
+						className="px-4 text-cyan-400 font-bold text-3xl"
+						key={pageNo}
+						disabled
+					>
 						{pageNo}
-					</span>
+					</button>
 				) : (
 					<button
 						className="px-4 text-cyan-300 font-bold text-xl"
@@ -36,7 +40,7 @@ function PageButtonSection({
 				);
 			})}
 
-			<WhiteButton path="" buttonName=">" userAction={nextPage} />
+			<WhiteButton buttonName=">" userAction={nextPage} />
 		</div>
 	);
 }

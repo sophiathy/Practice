@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import WhiteButton from "./WhiteButton";
 import PreviewSection from "./PreviewSection";
+import { Link } from "react-router-dom";
 
 type SkuCardProps = {
 	imageUrl: string;
 	skuName: string;
 	skuCode: string;
 	skuPrice: string;
-	description: string;
-	stockStatus: string;
 	isSelected: boolean;
 	toggleSelected: () => void;
 };
@@ -18,8 +17,6 @@ function SkuCard({
 	skuName,
 	skuCode,
 	skuPrice,
-	description,
-	stockStatus,
 	isSelected,
 	toggleSelected,
 }: SkuCardProps) {
@@ -90,23 +87,11 @@ function SkuCard({
 			)}
 			<p className="font-semibold">{skuName}</p>
 			<div className="flex-row space-x-12">
-				<WhiteButton
-					path=""
-					buttonName="Preview"
-					userAction={() => togglePreview()}
-				/>
+				<WhiteButton buttonName="Preview" userAction={() => togglePreview()} />
 
-				<WhiteButton
-					path="/details"
-					buttonName="Details"
-					props={{
-						imageUrl: imageUrl,
-						skuName: skuName,
-						skuPrice: skuPrice,
-						description: description,
-						stockStatus: stockStatus,
-					}}
-				/>
+				<Link to={{ pathname: "/details", search: `?skuCode=${skuCode}` }}>
+					<WhiteButton buttonName="Details" />
+				</Link>
 			</div>
 
 			{isPreviewing && (
